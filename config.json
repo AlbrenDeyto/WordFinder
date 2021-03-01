@@ -1,0 +1,8 @@
+{
+  "ArticleFilePath": "Article.txt",
+  "WordsFilePath": "Words.txt",
+  "OutputFilePath": "Output.txt",
+  "StatementDelimeters": ".?!",
+  "OtherDelimeters": ",;:",
+  "Abbreviations": "Mr.,Mrs.,e.g."
+}
