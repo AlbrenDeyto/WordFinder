@@ -9,7 +9,6 @@ namespace WordFinder.Core.Interfaces
      * */
     public interface IFileWriter
     {
-        string Content { get; set; }
         void Write();
     }
 }

@@ -11,7 +11,6 @@ namespace WordFinder.Core.Interfaces
      */
     public interface IFileLoader
     {
-        string FilePath { get; set; }
         void Load();
     }
 }

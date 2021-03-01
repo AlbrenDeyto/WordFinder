@@ -12,17 +12,19 @@ namespace WordFinderUnitTest
         [Fact]
         public void GetSentencesTester()
         {
-            var article = @"This is what I learned from Mr. Jones about a paragraph. " +
+            var article = @"I can now write topics on sports e.g. basketball, football, baseball and submit it to Mrs. Smith. " +
+                          @"This is what I learned from Mr. Jones about a paragraph. " +
                           @"A paragraph is a group of words put together to form a group that is usually longer than a sentence. " +
                           @"Paragraphs are often made up of several sentences.";
-            var words = new string[] { "This", "is" };
-            var abbreviations = "Mr.,Mrs.";
+            var words = new string[] { "This", "is", "smith", "sentence", "sentences", "basketball" };
+            var abbreviations = "Mr.,Mrs.,e.g.";
             var wordHunter = new WordHunter
             {
                 Article = article,
                 Words = words,
                 Abbreviations = abbreviations.Split(","),
-                Delimeters = ".?!"
+                Delimeters = ".?!",
+                OtherDelimeters = ",;:"
             };
 
             var sentences = wordHunter.GetSentences();
@@ -33,17 +35,19 @@ namespace WordFinderUnitTest
         [Fact]
         public void FindWordsTester()
         {
-            var article = @"This is what I learned from Mr. Jones about a paragraph. " +
+            var article = @"I can now write topics on sports e.g. basketball, football, baseball and submit it to Mrs. Smith. " +
+                          @"This is what I learned from Mr. Jones about a paragraph. " +
                           @"A paragraph is a group of words put together to form a group that is usually longer than a sentence. " +
                           @"Paragraphs are often made up of several sentences.";
-            var words = new string[] { "xx", "This", "is", "a" };
-            var abbreviations = "Mr.,Mrs.";
+            var words = new string[] { "This", "is", "smith", "sentence", "sentences", "basketball" };
+            var abbreviations = "Mr.,Mrs.,e.g.";
             var wordHunter = new WordHunter
             {
                 Article = article,
                 Words = words,
                 Abbreviations = abbreviations.Split(","),
-                Delimeters = ".?!"
+                Delimeters = ".?!",
+                OtherDelimeters = ",;:"
             };
 
             var sentences = wordHunter.GetSentences();

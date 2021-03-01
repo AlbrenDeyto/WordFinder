@@ -3,12 +3,12 @@ using System.Collections.Generic;
 using System.Text;
 using System.IO;
 using WordFinder.Core.Interfaces;
+using WordFinder.Core;
 
 namespace WordFinder.Handler.Services.FileLoaderService
 {
-    public class ArticleLoader : IFileLoader
+    public class ArticleLoader : FileBase, IFileLoader
     {
-        public string FilePath { get; set; }
         public string Statements { get; set; }
 
         public void Load()

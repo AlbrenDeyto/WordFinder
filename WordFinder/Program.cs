@@ -5,6 +5,7 @@ using WordFinder.Core;
 using WordFinder.Core.Config;
 using WordFinder.Core.Models;
 using WordFinder.Handler.Services.FileLoaderService;
+using WordFinder.Handler.Services.FileWriteServices;
 using WordFinder.Handler.Services.WordFinderServices;
 
 namespace WordFinder
@@ -18,7 +19,10 @@ namespace WordFinder
         {
             var err = Errors.Find(e => e.ErrorCode.Equals(errorCode));
 
-            return err.ErrorMsg;
+            if (err != null)
+                return err.ErrorMsg;
+
+            return string.Empty;
         }
 
         public static void AddError(string errorCode, string msg)
@@ -32,7 +36,7 @@ namespace WordFinder
         {
             var error = FindError(code);
 
-            if (error == null)
+            if (string.IsNullOrEmpty(error))
                 AddError(code, msg);
             else
                 Console.WriteLine(error);
@@ -50,6 +54,7 @@ namespace WordFinder
                 WordsFilePath = configReader.FindItem(ConfigItemNames.WordsFilePath),
                 OutputFilePath = configReader.FindItem(ConfigItemNames.OutputFilePath),
                 StatementDelimeters = configReader.FindItem(ConfigItemNames.StatementDelimeters),
+                OtherDelimeters = configReader.FindItem(ConfigItemNames.OtherDelimeters),
                 Abbreviations = configReader.FindItem(ConfigItemNames.Abbreviations)
             };
         }
@@ -88,7 +93,6 @@ namespace WordFinder
             catch (Exception)
             {
                 FindOrAddError("Err2", "Loading Words file failed.");
-
             }
 
             return null;
@@ -102,29 +106,31 @@ namespace WordFinder
                     FindOrAddError("Err3", "No Article to process.");
                     break;
                 case -2:
-                    FindOrAddError("Err3", "No Article to process.");
+                    FindOrAddError("Err4", "No Article to process.");
                     break;
                 case -3:
-                    FindOrAddError("Err3", "No Article to process.");
+                    FindOrAddError("Err5", "No Article to process.");
                     break;
                 case -4:
-                    FindOrAddError("Err3", "No Article to process.");
+                    FindOrAddError("Err6", "No Article to process.");
                     break;
             }
         }
-        public static void Process(string delimeters, string article, string[] words, string abbreviations)
+        public static void Process(string delimeters, string otherDelimeters,
+            string article, string[] words, string abbreviations, 
+            string basePath, string outputFilename)
         {
             var wordHunter = new WordHunter
             {
                 Article = article,
                 Words = words,
                 Delimeters = delimeters,
-                Abbreviations = abbreviations.Split(",")
+                Abbreviations = abbreviations.Split(","),
+                OtherDelimeters = otherDelimeters
             };
-            short result = 0;
+            
             var sentences = wordHunter.GetSentences();
-
-            //wordLocator.FindAndCount();
+            short result = wordHunter.FindAndCount(sentences);
 
             if (result < 0)
             {
@@ -132,20 +138,39 @@ namespace WordFinder
                 Console.WriteLine("There was a problem in word finder processing.");
             }
 
-            Console.WriteLine("Word Finder Processing Completed..");
+            try
+            {
+                var outputWriter = new OutputWriter(wordHunter.FoundWords, outputFilename);
 
+                outputWriter.FilePath = basePath;
+                outputWriter.GenerateResult();
+                if (outputWriter.Results.Length > 0)
+                {
+                    outputWriter.Write();
+                    Console.WriteLine("Word Finder Processing Completed..");
+                    return;
+                }
+
+                FindOrAddError("Err6", "There was no results generated.");
+            }
+            catch (Exception)
+            {
+                FindOrAddError("Err7", "Writing output file failed.");
+            }
         }
 
         static void Main(string[] args)
         {
-            Console.WriteLine("Hello World!");
+            Console.WriteLine("Word Hunting started!");
             var basePath = AppDomain.CurrentDomain.BaseDirectory;
 
             var configItems = LoadConfigItems(basePath);
             var article = LoadArticle(basePath, configItems.ArticleFilePath);
             var words = LoadWordsToFind(basePath, configItems.WordsFilePath);
 
-            Process(configItems.StatementDelimeters, article, words, configItems.Abbreviations);
+            Process(configItems.StatementDelimeters, configItems.OtherDelimeters,
+                article, words, configItems.Abbreviations, 
+                basePath, configItems.OutputFilePath);
         }
     }
 }

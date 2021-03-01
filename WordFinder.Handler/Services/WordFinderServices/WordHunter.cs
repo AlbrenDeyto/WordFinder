@@ -13,17 +13,21 @@ namespace WordFinder.Handler.Services.WordFinderServices
     public class WordHunter : IWordFinder, IWordFinderResultWriter
     {
         public string Delimeters { get; set; }
+        public string OtherDelimeters { get; set; }
+
         public string Article { get; set; }
         public string[] Words { get; set; }
         public List<FoundWord> FoundWords { get; set; } = new List<FoundWord>();
         public string[] Abbreviations { get; set; }
 
         private char[] _charDelimeters;
+        private char[] _otherDelimeters;
 
         public WordHunter() { }
         private void SetDelimeters()
         {
             _charDelimeters = Delimeters.ToCharArray();
+            _otherDelimeters = OtherDelimeters.ToCharArray();
         }
 
         private bool IsAbbreviation(string word)
@@ -55,6 +59,17 @@ namespace WordFinder.Handler.Services.WordFinderServices
             return 0;
         }
 
+        private string CleanArticle()
+        {
+            var cleanedArticle = this.Article;
+
+            for (var i = 0; i < _otherDelimeters.Length; i++)
+            {
+                cleanedArticle = cleanedArticle.Replace(_otherDelimeters[i].ToString(), string.Empty);
+            }
+
+            return cleanedArticle;
+        }
         public List<string> GetSentences()
         {
             List<string> sentences = new List<string>();
@@ -62,7 +77,8 @@ namespace WordFinder.Handler.Services.WordFinderServices
             try
             {
                 this.SetDelimeters();
-                var allWords = Article.Split(new char[0]);
+                var cleanedArticle = this.CleanArticle();
+                var allWords = cleanedArticle.Split(new char[0]);
                 var sentence = new StringBuilder();
 
                 foreach (var word in allWords)
@@ -71,7 +87,10 @@ namespace WordFinder.Handler.Services.WordFinderServices
 
                     if (this.IsEndingWord(word))
                     {
-                        sentences.Add(sentence.ToString().Trim());
+                        var sentenceStr = sentence.ToString().Trim();
+                        sentenceStr = sentenceStr.Substring(0, sentenceStr.Length - 1);
+
+                        sentences.Add(sentenceStr);
                         sentence = new StringBuilder();
                     }
                 }
@@ -88,7 +107,7 @@ namespace WordFinder.Handler.Services.WordFinderServices
         private int CountPerSentence(string wordToSearch, string[] source)
         {
             var matchQuery = from word in source
-                             where word.ToLower() == wordToSearch.ToLower()
+                             where word.ToLower().Equals(wordToSearch.ToLower())
                              select word;
             return matchQuery.Count();
         }

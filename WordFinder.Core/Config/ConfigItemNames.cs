@@ -6,6 +6,7 @@
         public const string WordsFilePath = "WordsFilePath";
         public const string OutputFilePath = "OutputFilePath";
         public const string StatementDelimeters = "StatementDelimeters";
+        public const string OtherDelimeters = "OtherDelimeters";
         public const string Abbreviations = "Abbreviations";
     }
 }
