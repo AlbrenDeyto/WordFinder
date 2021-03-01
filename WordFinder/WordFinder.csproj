@@ -1,0 +1,27 @@
+﻿<Project Sdk="Microsoft.NET.Sdk">
+
+  <PropertyGroup>
+    <OutputType>Exe</OutputType>
+    <TargetFramework>netcoreapp3.1</TargetFramework>
+  </PropertyGroup>
+
+  <ItemGroup>
+    <Compile Remove="Input\**" />
+    <Compile Remove="Output\**" />
+    <EmbeddedResource Remove="Input\**" />
+    <EmbeddedResource Remove="Output\**" />
+    <None Remove="Input\**" />
+    <None Remove="Output\**" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <None Remove="Article.txt" />
+    <None Remove="config.json" />
+  </ItemGroup>
+
+  <ItemGroup>
+    <ProjectReference Include="..\WordFinder.Core\WordFinder.Core.csproj" />
+    <ProjectReference Include="..\WordFinder.Handler\WordFinder.Handler.csproj" />
+  </ItemGroup>
+
+</Project>
